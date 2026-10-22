@@ -1,0 +1,90 @@
+﻿@model IEnumerable<ProyBancos_MVC_TRX.Models.Movimientos>
+
+@{
+    ViewBag.Title = "ListarMovimientosCuenta";
+}
+
+<h2>ListarMovimientosCuenta</h2>
+
+@if (TempData["mensaje"] != null)
+{ 
+    <div>
+        <h4><strong>@TempData["mensaje"]</strong></h4>
+        <br/>
+    </div>
+}
+
+
+<!-- Formulario de ASP NET MVC 5 -->
+@using(Html.BeginForm())
+{
+    <div>
+        Nro de Cuenta: @Html.DropDownList("num_cta", ViewBag.cuentas as SelectList,
+                           "Seleccione una Cuenta",
+                           new { @class = "form-select" })
+        <br />
+        <button class="btn btn-outline-primary">Consultar</button> |
+        @Html.ActionLink("Nuevo Movimiento", "RegistrarNuevoMovimiento",
+                 new { num_cta = ViewBag.num_cta } ,
+                 new { @class = "btn btn-outline-success" })
+    </div>
+
+}
+
+<br/>
+<div>
+    <h4><strong>Cantidad de Registros: @ViewBag.contador</strong></h4>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.num_mov)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.num_cta)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.fecha)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.tip_mov)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.saldo_ant)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.monto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.saldo_nue)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.num_mov)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.num_cta)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.fecha)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tip_mov)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.saldo_ant)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.monto)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.saldo_nue)
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,77 @@
+USE BDBANCOS2025
+GO
+
+/*
+SELECT * FROM Cuentas WHERE num_cta = '192-18531-00'
+GO
+
+SELECT * FROM Movimientos WHERE num_cta = '192-18531-00'
+GO
+*/
+
+CREATE OR ALTER PROCEDURE PA_LISTA_CUENTAS
+AS
+	SELECT C.num_cta, 
+	CONCAT(C.num_cta, ' - ', CL.cli_nombre, ' - ', trim(str(C.saldo))) AS cli_cta 
+	FROM Cuentas C INNER JOIN Clientes CL
+		ON C.cli_codigo = CL.cli_codigo
+	ORDER BY CL.cli_nombre
+GO
+
+EXEC PA_LISTA_CUENTAS
+GO
+
+/*
+SELECT * FROM Movimientos
+GO
+*/
+
+
+CREATE OR ALTER PROCEDURE PA_MOVIMIENTOS_CUENTA
+@NUM_CTA CHAR(12)=''
+AS
+	IF @NUM_CTA = ''
+		SELECT * FROM Movimientos
+	ELSE
+		SELECT * FROM Movimientos
+			WHERE num_cta = @NUM_CTA
+GO
+
+EXEC PA_MOVIMIENTOS_CUENTA
+EXEC PA_MOVIMIENTOS_CUENTA '191-12507-09'
+GO
+
+
+
+CREATE OR ALTER PROCEDURE PA_REG_MOVIMIENTOS
+@NUM_CTA CHAR(12), @TIP_MOV CHAR(1), @MONTO DECIMAL(8,2)
+AS
+BEGIN
+	DECLARE @NEW_SALDO DECIMAL(10, 2) = 0
+	DECLARE @SALDO_ACT DECIMAL(10, 2) = 
+	    (SELECT saldo FROM Cuentas WHERE num_cta=@NUM_CTA)
+	--
+	IF @TIP_MOV='D' -- Depósito
+		SET @NEW_SALDO = @SALDO_ACT + @MONTO
+	ELSE -- 'R' Retiro
+		SET @NEW_SALDO = @SALDO_ACT - @MONTO
+	--
+	INSERT INTO Movimientos VALUES(@NUM_CTA, GETDATE(), @TIP_MOV, 
+		@SALDO_ACT, @MONTO, @NEW_SALDO )
+	--
+	UPDATE Cuentas
+		SET saldo = @NEW_SALDO
+			WHERE num_cta = @NUM_CTA
+END
+GO
+
+
+/*
+ALTER TABLE CUENTAS
+	ADD CONSTRAINT CK_SALDO_POSITIVO CHECK(SALDO>=0)
+GO
+
+delete from movimientos where num_mov = 236
+go
+*/
+
